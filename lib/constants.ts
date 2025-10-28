@@ -3,7 +3,7 @@ export interface EventItem {
 	slug: string;
 	title: string;
 	date: string; // YYYY-MM-DD
-	time?: string; // HH:MM (local)
+	time: string; // HH:MM (local)
 	location: string;
 	image: string; // path under public/, e.g. /images/event1.png
 }
