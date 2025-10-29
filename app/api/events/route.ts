@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
 		} catch (e) {
 			return NextResponse.json(
-				{ message: 'Invalid json data format' },
+				{ message: 'Invalid form data format' },
 				{ status: 400 }
 			);
 		}
