@@ -1,4 +1,4 @@
-import { Schema, model, Document, models } from 'mongoose';
+import { Schema, model, Document, models, Model } from 'mongoose';
 import slugify from 'slugify';
 
 // Event document interface
@@ -117,35 +117,69 @@ const eventSchema = new Schema<IEvent>(
 );
 
 // Generate slug from title and normalize date/time formats
-eventSchema.pre('save', function (next) {
-	// Only update slug if title is modified
-	if (this.isModified('title')) {
-		this.slug = slugify(this.title, { lower: true, strict: true });
-	}
+eventSchema.pre('save', async function (next) {
+  // 1. Cast 'this' to the expected Document interface and Model type
+  const doc = this as IEvent;
+  const EventModel = doc.constructor as Model<IEvent>; // <-- Correctly reference the model
 
-	// Normalize date to ISO format
-	if (this.isModified('date')) {
-		const normalizedDate = new Date(this.date)
-			.toISOString()
-			.split('T')[0];
-		this.date = normalizedDate;
-	}
+  // Only run if the title is new or modified
+  if (doc.isNew || doc.isModified('title')) {
+    const baseSlug = slugify(doc.title, {
+      lower: true,
+      strict: true
+    });
+    let finalSlug = baseSlug;
+    let counter = 1;
+    const MAX_ATTEMPTS = 100;
 
-	// Normalize time to 24-hour format
-	if (this.isModified('time')) {
-		const timeDate = new Date(`1970-01-01T${this.time}`);
-		this.time = timeDate.toLocaleTimeString('en-US', {
-			hour12: false,
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
+    // Loop until a unique slug is found
+    while (true) {
+      if (counter > MAX_ATTEMPTS) {
+        return next(
+          new Error(
+            'Unable to generate a unique slug after multiple attempts'
+          )
+        );
+      }
+      // 2. USE EventModel (this.constructor) FOR THE DATABASE CHECK
+      const existingDoc = await EventModel.findOne({
+        slug: finalSlug,
+        // Exclude the current document from the search (crucial for updates)
+        _id: { $ne: doc._id } 
+      });
 
-	next();
+      if (!existingDoc) {
+        doc.slug = finalSlug;
+        break; // Found a unique slug, exit the loop
+      }
+
+      // If it exists, append a counter and try again
+      finalSlug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+  }
+
+  // Normalize date to ISO format
+  if (doc.isModified('date')) {
+    const normalizedDate = new Date(doc.date)
+      .toISOString()
+      .split('T')[0];
+    doc.date = normalizedDate;
+  }
+
+  // Normalize time to 24-hour format
+  if (doc.isModified('time')) {
+    const timeDate = new Date(`1970-01-01T${doc.time}`);
+    doc.time = timeDate.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  next();
 });
 
-// Create unique index on slug for better performance
-eventSchema.index({ slug: 1 }, { unique: true });
 
 // Create compound index for common queries
 eventSchema.index({ date: 1, mode: 1 });
