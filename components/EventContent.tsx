@@ -58,18 +58,15 @@ const EventDetailsItem = ({
 	);
 };
 
-type PageParams = { slug: string };
-type ParamsPromise = Promise<PageParams>;
-
-// 1. Define the props for the child component
-interface EventContentProps {
-	eventPromise: ParamsPromise;
-}
 /**
  * Component that does the dynamic fetching and rendering.
  * Everything inside this component will stream, allowing the outer shell to render.
  */
-async function EventContent({ eventPromise }: EventContentProps) {
+async function EventContent({
+	eventPromise
+}: {
+	eventPromise: Promise<{ slug: string }>;
+}) {
 	const { slug } = await eventPromise;
 
 	// Validate slug format

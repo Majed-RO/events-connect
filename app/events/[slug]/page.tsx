@@ -101,11 +101,14 @@ export default async function EventPage({ params }: EventPageProps) {
 	// cacheLife('hours');
 
 	// const { slug } = await params;
+  /* SEE: https://nextjs.org/docs/messages/blocking-route#params-and-searchparams */
+  const eventParams = params.then(p => ({ slug: p.slug  }))
 
 	return (
 		<section id="event">
 			<Suspense fallback={<EventSkeleton />}>
-				<EventContent eventPromise={params} />
+				{/* <EventContent eventPromise={params} /> */}
+				<EventContent eventPromise={eventParams} />
 			</Suspense>
 		</section>
 	);
