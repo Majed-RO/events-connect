@@ -1,26 +1,8 @@
 'use server';
 
-import { Event, IEvent } from '@/database';
+import { Event } from '@/database';
 import dbConnect from '../mongodb';
 // import { LeanDocument } from 'mongoose';
-
-export async function bookEvent(email: string, eventId: string) {
-	// Here you would typically handle the booking logic, e.g., save the email and eventId to your database
-	console.log(
-		`Booking request submitted for email: ${email} for event ID: ${eventId}`
-	);
-	// Simulate async operation
-	return new Promise(resolve => setTimeout(resolve, 1000));
-}
-
-export async function cancelBooking(email: string, eventId: string) {
-	// Here you would typically handle the cancellation logic, e.g., remove the booking from your database
-	console.log(
-		`Booking cancellation requested for email: ${email} for event ID: ${eventId}`
-	);
-	// Simulate async operation
-	return new Promise(resolve => setTimeout(resolve, 1000));
-}
 
 export async function getSimilarEventsBySlug(slug: string) {
 	try {

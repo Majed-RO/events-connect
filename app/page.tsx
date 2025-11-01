@@ -2,6 +2,7 @@ import EventCard from '@/components/EventCard';
 import ExploreBtn from '@/components/ExploreBtn';
 import { IEvent } from '@/database';
 import { cacheLife } from 'next/cache';
+
 // import events from '@/lib/constants';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -12,21 +13,18 @@ const HomePage = async () => {
 
 	let events: IEvent[] = [];
 
-	try {
-		const response = await fetch(`${BASE_URL}/api/events`);
+	// try {
+	const response = await fetch(`${BASE_URL}/api/events`);
 
-		if (!response.ok) {
-			console.error(
-				'Failed to fetch events:',
-				response.status
-			);
-		} else {
-			const data = await response.json();
-			events = data.events || [];
-		}
-	} catch (error) {
-		console.error('Error fetching events:', error);
+	if (!response.ok) {
+		console.error('Failed to fetch events:', response.status);
+	} else {
+		const data = await response.json();
+		events = data.events || [];
 	}
+	/* } catch (error) {
+		console.error('Error fetching events:', error);
+	} */
 
 	return (
 		<section>

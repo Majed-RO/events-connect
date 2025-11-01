@@ -1,0 +1,18 @@
+// tsconfig.script.json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Override the Next.js specific setting for Node.js execution
+    "moduleResolution": "node", 
+    // Ensure Node.js can find types correctly
+    "module": "commonjs", 
+    // Set target to a modern, supported Node.js version
+    "target": "es2020",
+    "noEmit": false
+  },
+  // Only include your scripts folder
+  "include": [
+    "lib/**/*.ts",
+    "scripts/**/*.ts"
+  ]
+}

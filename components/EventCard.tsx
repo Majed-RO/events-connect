@@ -16,11 +16,12 @@ const EventCard = ({ title, image, slug, location, date, time }: Props) => {
 	return (
 		<Link href={href} id="event-card">
 			<Image
-				src={image}
+				src={image + '?w=800&h=600'}
 				alt={title}
 				width={410}
 				height={300}
 				className="poster"
+				unoptimized={true}
 			/>
 
 			<div className="flex flex-row gap-2">
